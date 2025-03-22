@@ -1,4 +1,5 @@
 import express from 'express';
+import joi from 'joi'   
 const app = express();
 app.use(express.json());
 
@@ -24,7 +25,15 @@ app.get('/api/books',(req,res) =>{
 //app obyektining post methodi orqali serverga malumot kiritish
 
 app.post('/api/books',(req,res) =>{
-    const book = {
+        if (!req.body.name){
+            res.status(404).send("name is required");
+            return;
+        }
+        if(req.body.name.length<3){
+            res.status(404).send("name should be more 3 characteristics");
+            return;
+        }
+        const book = {
         id : books.length+1,
         name : req.body.name
     };
