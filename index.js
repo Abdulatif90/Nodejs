@@ -1,5 +1,6 @@
 import express from 'express';
 const app = express();
+app.use(express.json());
 
 const books =[
     {id: 1, name : 'rich and poor dad'},
@@ -20,17 +21,31 @@ app.get('/api/books',(req,res) =>{
     // res.send(['rich and poor dad','good to great', 'the war of art'])  // dastlabki etab - bundan shu urlda kitoblar array chiqadi
 })
 
+//app obyektining post methodi orqali serverga malumot kiritish
+
+app.post('/api/books',(req,res) =>{
+    const book = {
+        id : books.length+1,
+        name : req.body.name
+    };
+    books.push(book)
+    res.status(201).send(book);
+}); 
+
 // GET methodi orqali data larni Id bilan chaqirib olish
 app.get('/api/books/:id',(req,res) =>{
     const book = books.find(b => b.id === parseInt(req.params.id));
     if (!book){
         res.status(404).send('Berilgan ID ga teng kitob topilmadi');
     }    
+  
     //res.send(req.params.id)// bu requestning params objecti bolib bu obyekt orqali id sini chaqirib olamiz
-    res.send(book) // sorov : // http://localhost:5000/api/books/1  natija: {"id":1,"name":"rich and poor dad"}
-    //http://localhost:5000/api/books/4 - mavjud bolmagan id ni bersak natija : Berilgan ID ga teng kitob topilmadi 
-    // statusni tekshirish uchun F12 - networks - ctrl+R  ni bosamiz 
-})
+      res.send(book) 
+})    
+ // sorov : // http://localhost:5000/api/books/1  natija: {"id":1,"name":"rich and poor dad"}
+ //http://localhost:5000/api/books/4 - mavjud bolmagan id ni bersak natija : Berilgan ID ga teng kitob topilmadi 
+ // statusni tekshirish uchun F12 - networks - ctrl+R  ni bosamiz 
+
 // GET methodi orqali data larni bir nechta parametrlari  bilan chaqirib olish 
 //http://localhost:5000/api/articles/2022/10
 //natija: {"year":"2022","month":"10"}
@@ -45,6 +60,8 @@ app.get('/api/articles/:year/:month',(req,res) =>{
     res.send(req.query)  // bu requestning params objecti bolib bu obyekt orqali id sini chaqirib olamiz
    // natija: {"sortBy":"name"}
 });
+
+
 
 
 const port = process.env.PORT || 5000
