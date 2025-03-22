@@ -1,5 +1,6 @@
 import express from 'express';
-import joi from 'joi'   
+import Joi from 'joi'
+   
 const app = express();
 app.use(express.json());
 
@@ -24,16 +25,29 @@ app.get('/api/books',(req,res) =>{
 
 //app obyektining post methodi orqali serverga malumot kiritish
 
-app.post('/api/books',(req,res) =>{
-        if (!req.body.name){
-            res.status(404).send("name is required");
-            return;
-        }
-        if(req.body.name.length<3){
-            res.status(404).send("name should be more 3 characteristics");
-            return;
-        }
-        const book = {
+//validate qilishdan oldin schema yaratib olish kerak .
+//schemada talab qilingan min malumotlarni type va aniq mavjud bo`lishligi yozilishi kerak
+// bu validate Joi orqali amalga oshiriladi
+
+app.post('/api/books', (req, res) => {
+  // Schema yaratish
+  const bookSchema = Joi.object({
+    name: Joi.string().required().min(3) // name string bo'lishi kerak, null bo'lishi mumkin emas, min 3 harf bo'lishi kerak
+  });
+
+  // Ma'lumotlarni tekshirish
+  const result = bookSchema.validate(req.body);
+
+  if (result.error) {
+    // Agar xato bo'lsa, 401 status kodi bilan xatoni yuboring
+    //res.status(401).send(result.error.details);// hatoni complex olish
+    res.status(401).send(result.error.details[0].message);// bu complex hatoni faqat massage qismini beradi holos
+    return;
+  } else {
+    // Ma'lumotlar to'g'ri bo'lsa, muvaffaqiyatli javob yuboring
+    res.status(200).send('Book data is valid');
+  }
+    const book = {
         id : books.length+1,
         name : req.body.name
     };
