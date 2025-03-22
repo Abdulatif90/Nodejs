@@ -7,7 +7,7 @@ const books =[
     {id: 3, name : 'the war of art'}
 ]
 
-
+// server qurishni boshlaymiz
 
 // bu get methodi orqali '/' url da salom degan sozni chiqarish
 app.get('/',(req, res) => {
