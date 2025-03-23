@@ -18,6 +18,8 @@
   },
   "dependencies": {
     "chalk": "^4.1.2",
+    "config": "^3.3.12",
+    "dotenv": "^16.4.7",
     "helmet": "^4.6.0",
     "joi": "^17.13.3",
     "moment": "^2.30.1",

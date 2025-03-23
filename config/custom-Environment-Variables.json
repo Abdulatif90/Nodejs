@@ -1,0 +1,9 @@
+{   "name":"my node app - development",
+    "port":3000,
+    "database":{
+         
+    "username":"DATABASE_USERNAME",
+    "host":"dev-localhost",
+    "name":"myapp"
+}
+}

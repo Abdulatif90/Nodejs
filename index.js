@@ -1,8 +1,12 @@
 import express from 'express';
-import Joi from 'joi'
+import Joi from 'joi';
 import logger from '../Nodejs/logger.js';
 import helmet from 'helmet';
 import morgan from 'morgan';
+
+import config from 'config'; // config moduli shu yerda import qilinadi
+
+
 const app = express();
 
 // bu middleware funksiya, bu funksiya orqali JSON formatidagi ma'lumotlarni ishlash uchun
@@ -31,6 +35,10 @@ console.log(app.get('env')); // get funksiyasi orqali env ni olish. env - bu das
 // agar dastur productionda ishga tushsa, konsolga 'Production' degan so'z chiqadi
 // agar dastur testda ishga tushsa, konsolga 'Test' degan so'z chiqadi  
 // agar dastur developmentda ishga tushsa, konsolga 'Development' degan so'z chiqadi
+
+console.log('Application Name:', config.get('name')); // config.get('name') orqali config papkasidagi name ni olish
+console.log('Localhost:', config.get('database.host')); // config.get('mail.host') orqali config papkasidagi mail.host ni olish
+console.log('password',config.get('database.password')); // config.get('database.password') orqali config papkasidagi database.password ni olish
 
 
 app.use(function(req, res, next)  {

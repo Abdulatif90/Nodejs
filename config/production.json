@@ -1,0 +1,9 @@
+{
+    "name":"my node app - production",
+    "port":80,
+    "database":{
+        "host":"prod-localhost",
+        "port":27017,
+        "name":"myapp"
+    }
+   }
