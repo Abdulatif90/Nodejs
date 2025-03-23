@@ -1,13 +1,22 @@
 import express from 'express';
 import Joi from 'joi'
 import { json } from 'express';
+import logger from '../Nodejs/logger.js';
 const app = express();
-app.use(express.json());
 
-
+// bu middleware funksiya, bu funksiya orqali JSON formatidagi ma'lumotlarni ishlash uchun
+// bu middleware funksiya, bu funksiya orqali URL-encoded ma'lumotlarni ishlash uchun
 
 app.use(express.json()); // JSON formatidagi ma'lumotlarni ishlash uchun
 app.use(express.urlencoded({ extended: true })); // URL-encoded ma'lumotlarni ishlash uchun
+app.use(logger);
+// app.use(express.static('public')); // public papkani static fayllarini ishlash uchun
+//custom middleware funksiya
+// bu middleware funksiya, bu funksiya orqali serverga kelgan so'rovni konsolga chiqarish uchun ishlatiladi
+app.use(function(req, res, next)  {
+    console.log('Middleware ishga tushdi...');
+    next(); // keyingi middleware funksiyasiga o'tish, agar yo'qsa, keyingi middleware funksiyasiga o'tmaydi va serverni to'xtatadi
+});
 
 const books =[
     {id: 1, name : 'rich and poor dad'},
