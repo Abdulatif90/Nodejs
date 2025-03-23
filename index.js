@@ -19,6 +19,8 @@ app.use(helmet());// helmet modulini ishlatish uchun, bu modul serverni xavfsizl
 app.use(morgan('tiny')); // morgan modulini ishlatish uchun, bu modul serverga kelgan so'rovlarni konsolga chiqarish uchun ishlatiladi
 app.use(express.static('public')); // public papkani static fayllarini ishlash uchun
 // app.use(express.static('public')); // public papkani static fayllarini ishlash uchun
+app.set('view engine', 'pug'); // pug modulini ishlatish uchun, bu modul serverda view engine sifatida ishlatiladi
+app.set('views', './views'); // views papkasini serverda view engine sifatida ishlatish uchun ishlatiladi
 //custom middleware funksiya
 // bu middleware funksiya, bu funksiya orqali serverga kelgan so'rovni konsolga chiqarish uchun ishlatiladi
 console.log(process.env.NODE_ENV);
@@ -36,9 +38,9 @@ console.log(app.get('env')); // get funksiyasi orqali env ni olish. env - bu das
 // agar dastur testda ishga tushsa, konsolga 'Test' degan so'z chiqadi  
 // agar dastur developmentda ishga tushsa, konsolga 'Development' degan so'z chiqadi
 
-console.log('Application Name:', config.get('name')); // config.get('name') orqali config papkasidagi name ni olish
-console.log('Localhost:', config.get('database.host')); // config.get('mail.host') orqali config papkasidagi mail.host ni olish
-console.log('password',config.get('database.password')); // config.get('database.password') orqali config papkasidagi database.password ni olish
+// console.log('Application Name:', config.get('name')); // config.get('name') orqali config papkasidagi name ni olish
+// console.log('Localhost:', config.get('database.host')); // config.get('mail.host') orqali config papkasidagi mail.host ni olish
+// console.log('password',config.get('database.password')); // config.get('database.password') orqali config papkasidagi database.password ni olish
 
 
 app.use(function(req, res, next)  {
@@ -56,9 +58,10 @@ console.log(books)
 
 // bu get methodi orqali '/' url da salom degan sozni chiqarish
 app.get('/',(req, res) => {
-    res.send('Salom');  
+    // res.send('Salom');
+    res.render('index', { title: 'My Express App', message: 'Assalomu alaykum!' }); // pug modulini ishlatish uchun ishlatiladi  
 });
-
+// render funksiyasi orqali index.pug faylini chiqarish
 // get methodi orqali '/api/books'  urlda kitoblar arrayini chiqarish
 app.get('/api/books',(req,res) =>{
     res.send(books); // bu loyihaning 2 step/ bunda kitoblar oldindan basega kiritilib kn larni chaqirish
