@@ -1,7 +1,8 @@
 import express from 'express';
 import Joi from 'joi'
-import { json } from 'express';
 import logger from '../Nodejs/logger.js';
+import helmet from 'helmet';
+import morgan from 'morgan';
 const app = express();
 
 // bu middleware funksiya, bu funksiya orqali JSON formatidagi ma'lumotlarni ishlash uchun
@@ -9,7 +10,9 @@ const app = express();
 
 app.use(express.json()); // JSON formatidagi ma'lumotlarni ishlash uchun
 app.use(express.urlencoded({ extended: true })); // URL-encoded ma'lumotlarni ishlash uchun
-app.use(logger);
+app.use(logger);// logger modulini ishlatish uchun, bu modul serverga kelgan so'rovlarni konsolga chiqarish uchun ishlatiladi
+app.use(helmet());// helmet modulini ishlatish uchun, bu modul serverni xavfsizligini oshirish uchun ishlatiladi
+app.use(morgan('tiny')); // morgan modulini ishlatish uchun, bu modul serverga kelgan so'rovlarni konsolga chiqarish uchun ishlatiladi
 // app.use(express.static('public')); // public papkani static fayllarini ishlash uchun
 //custom middleware funksiya
 // bu middleware funksiya, bu funksiya orqali serverga kelgan so'rovni konsolga chiqarish uchun ishlatiladi
@@ -100,7 +103,7 @@ app.put('/api/books/:id', (req, res) => {
 
 app.delete('/api/books/:id',(req,res) =>{
   //kitobni id si boyicha topamiz
-  const book = books.find(b => b.id = parseInt(req.params.id));
+  const book = books.find(b => b.id = parseInt(req.params.id)); //parseInt orqali stringni numberga aylantirish
   // topilmasa error 404 beramiz
   if(!book){
     return res.status(404).send('Berilgan ID ga teng kitob topilmadi');
