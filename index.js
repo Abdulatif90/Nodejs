@@ -31,61 +31,68 @@ app.get('/api/books',(req,res) =>{
 
 app.post('/api/books', (req, res) => {
   // Schema yaratish
-  const bookSchema = Joi.object({
-    name: Joi.string().required().min(3) // name string bo'lishi kerak, null bo'lishi mumkin emas, min 3 harf bo'lishi kerak
-  });
-
-  // Ma'lumotlarni tekshirish
-  const result = bookSchema.validate(req.body);
-
-  if (result.error) {
+  const {error} = validateBook(req.body);
+  if (error) {
     // Agar xato bo'lsa, 401 status kodi bilan xatoni yuboring
     //res.status(401).send(result.error.details);// hatoni complex olish
-    res.status(401).send(result.error.details[0].message);// bu complex hatoni faqat massage qismini beradi holos
-    return;
+    return res.status(401).send(error.details[0].message);// bu complex hatoni faqat massage qismini beradi holos
+    
   } else {
     // Ma'lumotlar to'g'ri bo'lsa, muvaffaqiyatli javob yuboring
-    res.status(200).send('Book data is valid');
+    return res.status(200).send('Book data is valid');
   }
     const book = {
         id : books.length+1,
         name : req.body.name
     };
     books.push(book)
-    res.status(201).send(book);
+    return res.status(201).send(book);
 }); 
 
 // GET methodi orqali data larni Id bilan chaqirib olish
 app.get('/api/books/:id',(req,res) =>{
     const book = books.find(b => b.id === parseInt(req.params.id));
     if (!book){
-        res.status(404).send('Berilgan ID ga teng kitob topilmadi');
+     return  res.status(404).send('Berilgan ID ga teng kitob topilmadi');
     }    
   
-    //res.send(req.params.id)// bu requestning params objecti bolib bu obyekt orqali id sini chaqirib olamiz
       res.send(book) 
 })    
- // sorov : // http://localhost:5000/api/books/1  natija: {"id":1,"name":"rich and poor dad"}
- //http://localhost:5000/api/books/4 - mavjud bolmagan id ni bersak natija : Berilgan ID ga teng kitob topilmadi 
- // statusni tekshirish uchun F12 - networks - ctrl+R  ni bosamiz 
 
-// GET methodi orqali data larni bir nechta parametrlari  bilan chaqirib olish 
-//http://localhost:5000/api/articles/2022/10
-//natija: {"year":"2022","month":"10"}
-// app.get('/api/articles/:year/:month',(req,res) =>{
-//     res.send(req.params)  // bu requestning params method bolib bu method orqali id sini chaqirib olamiz
-// });
+app.put('/api/books/:id', (req, res) => {
+ 
+  //kitobni bazadan izlab topish
+  //kitob mavjud bolmasa, 404 hatoni qaytarish
+  const book = books.find(b => b.id === parseInt(req.params.id));
+  
+      if (!book){
+     return  res.status(404).send('Berilgan ID ga teng kitob topilmadi');
+    }   
+  //agar kitob topilsa sorovni validate qilish
+  
+  const {error} = validateBook(req.body);
 
-// GET sorovi bilan query larni oqishi uchun req ning query methodidan foydalanamiz
-/* bu url dan kn '?' belgisini qo`yish orqali qo`shimcha ma`lumotlar kiritiladi. 
- Misol uchun olinyotgan malumotlarni namelarini sort qilib olish*/
-app.get('/api/articles/:year/:month',(req,res) =>{
-    res.send(req.query)  // bu requestning params objecti bolib bu obyekt orqali id sini chaqirib olamiz
-   // natija: {"sortBy":"name"}
-});
+  //agar validate dan o'tmasa 400 error ni qaytarish
+  if (error) {
+    
+    // Agar xato bo'lsa, 401 status kodi bilan xatoni yuboring
+    //res.status(401).send(result.error.details);// hatoni complex olish
+    return res.status(401).send(result.error.details[0].message);// bu complex hatoni faqat massage qismini beradi holos
+  }
+  //kitobni yangiliash
+  book.name = req.body.name;
+  
+  //yangilangan kitobni qaytarish
+   return res.send(book); 
+}
+);
 
-
-
+function validateBook(book){
+  const bookSchema = {
+    name: Joi.string().required().min(3)
+  };
+  return Joi.object(bookSchema).validate(book);
+}
 
 const port = process.env.PORT || 5000
 app.listen(port, () => {
