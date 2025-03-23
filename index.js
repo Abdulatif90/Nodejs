@@ -1,15 +1,20 @@
 import express from 'express';
 import Joi from 'joi'
-   
+import { json } from 'express';
 const app = express();
 app.use(express.json());
+
+
+
+app.use(express.json()); // JSON formatidagi ma'lumotlarni ishlash uchun
+app.use(express.urlencoded({ extended: true })); // URL-encoded ma'lumotlarni ishlash uchun
 
 const books =[
     {id: 1, name : 'rich and poor dad'},
     {id: 2, name : 'good to great'},
     {id: 3, name : 'the war of art'}
 ]
-
+console.log(books)
 // server qurishni boshlaymiz
 
 // bu get methodi orqali '/' url da salom degan sozni chiqarish
@@ -30,24 +35,21 @@ app.get('/api/books',(req,res) =>{
 // bu validate Joi orqali amalga oshiriladi
 
 app.post('/api/books', (req, res) => {
-  // Schema yaratish
-  const {error} = validateBook(req.body);
+   const {error} = validateBook(req.body);
   if (error) {
     // Agar xato bo'lsa, 401 status kodi bilan xatoni yuboring
     //res.status(401).send(result.error.details);// hatoni complex olish
-    return res.status(401).send(error.details[0].message);// bu complex hatoni faqat massage qismini beradi holos
+     res.status(401).send(error.details[0].message);// bu complex hatoni faqat massage qismini beradi holos
+    }
+     // Schema yaratish
+  const book = {
+    id : books.length+1,
+    name : req.body.name
+  };
+  books.push(book);
+  return res.status(201).send(book); 
+  });
     
-  } else {
-    // Ma'lumotlar to'g'ri bo'lsa, muvaffaqiyatli javob yuboring
-    return res.status(200).send('Book data is valid');
-  }
-    const book = {
-        id : books.length+1,
-        name : req.body.name
-    };
-    books.push(book)
-    return res.status(201).send(book);
-}); 
 
 // GET methodi orqali data larni Id bilan chaqirib olish
 app.get('/api/books/:id',(req,res) =>{
@@ -86,6 +88,20 @@ app.put('/api/books/:id', (req, res) => {
    return res.send(book); 
 }
 );
+
+app.delete('/api/books/:id',(req,res) =>{
+  //kitobni id si boyicha topamiz
+  const book = books.find(b => b.id = parseInt(req.params.id));
+  // topilmasa error 404 beramiz
+  if(!book){
+    return res.status(404).send('Berilgan ID ga teng kitob topilmadi');
+  }
+  //topilsa delete qilamiz
+  const bookIndex = books.indexOf(book);// kitobni indexsini topadi
+  books.splice(bookIndex, 1); // splice orqali shu indexdan nechta item ni ochirish buyrugi
+  // ochirilgan kitobni qaytarib beramiz
+  return res.send(book);
+});
 
 function validateBook(book){
   const bookSchema = {
